@@ -1,9 +1,11 @@
 //TODO All Off. Just call all the cancelations of the hash maps in one command.
 package sigler.rebelempiremc.com;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -43,15 +45,15 @@ import com.gmail.woodyc40.utilitylib.reflection.ReflectionUtil;
 @SuppressWarnings("unused")
 public class Hearts extends JavaPlugin implements Listener
 {
-	public static ArrayList<String> toggle = new ArrayList<String>();
+	@SuppressWarnings("unchecked")
+	public List<String> toggle = (List<String>)getConfig().getList("List");
 	public void onEnable()
 	{
-		if(!getDataFolder().exists())
-			getDataFolder().mkdir();
 		getServer().getLogger().info("-----------------------------");
 		getServer().getLogger().info("REMC Particles has been enabled!");
 		getServer().getLogger().info("-----------------------------");
-		Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
+		//Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
+		saveDefaultConfig();
 		//getCommand("notes").setExecutor(new Noteeffect());
 }
 
@@ -61,6 +63,7 @@ public class Hearts extends JavaPlugin implements Listener
 		getServer().getLogger().info("REMC Particles has been disabled!");
 		getServer().getLogger().info("------------------------------");
 		Bukkit.getServer().getScheduler().cancelAllTasks();	
+		SaveUtil.saveObject(toggle, getDataFolder().toString() + File.separator +"player.yml");
 		effectHeart.removeAll(effectHeart);
 	}
 	
@@ -148,10 +151,12 @@ public class Hearts extends JavaPlugin implements Listener
 				{
 					player.sendMessage("You will no longer have particles upon login.");
 				toggle.add(player.getName());
+				saveConfig();
 				}else
 				{
 					player.sendMessage("You will recieve particles upon login!");
 					toggle.remove(player.getName());
+					saveConfig();
 				}
 			}else
 			{
