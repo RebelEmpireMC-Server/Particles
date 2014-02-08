@@ -1,9 +1,7 @@
 //TODO All Off. Just call all the cancelations of the hash maps in one command.
-
-
-
 package sigler.rebelempiremc.com;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,19 +36,24 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
 
+import sigler.rebelempiremc.com.*;
+
 import com.gmail.woodyc40.utilitylib.reflection.ReflectionUtil;
 
 @SuppressWarnings("unused")
 public class Hearts extends JavaPlugin implements Listener
 {
-	private JavaPlugin plugin;
+	public static ArrayList<String> toggle = new ArrayList<String>();
 	public void onEnable()
 	{
+		if(!getDataFolder().exists())
+			getDataFolder().mkdir();
 		getServer().getLogger().info("-----------------------------");
 		getServer().getLogger().info("REMC Particles has been enabled!");
 		getServer().getLogger().info("-----------------------------");
+		Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
 		//getCommand("notes").setExecutor(new Noteeffect());
-	}
+}
 
 	public void onDisable()
 	{
@@ -137,7 +140,24 @@ public class Hearts extends JavaPlugin implements Listener
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		final Player player = (Player) sender;	
-		
+		if (cmd.getName().equalsIgnoreCase("ptoggle"))
+		{
+			if (sender.hasPermission("remc.particle.toggle"))
+			{
+				if (!(toggle.contains(player.getName())))
+				{
+					player.sendMessage("You will no longer have particles upon login.");
+				toggle.add(player.getName());
+				}else
+				{
+					player.sendMessage("You will recieve particles upon login!");
+					toggle.remove(player.getName());
+				}
+			}else
+			{
+				player.sendMessage(ChatColor.RED + "You do not have permission!");
+			}
+		}
 		if (cmd.getName().equalsIgnoreCase("poff") || cmd.getName().equalsIgnoreCase("particlesoff"))
 		{
 			if (sender.hasPermission("remc.particle.off"))
@@ -998,8 +1018,6 @@ public class Hearts extends JavaPlugin implements Listener
 			sender.sendMessage("You must be a player to run this command!");
 		}
 		
-		if (sender instanceof Player)
-		{
 			if (cmd.getName().equalsIgnoreCase("pall") || cmd.getName().equalsIgnoreCase("palls"))
 			{
 				if (sender.hasPermission("remc.oponly.all"))
@@ -1060,7 +1078,7 @@ public class Hearts extends JavaPlugin implements Listener
 					}//else
 					else if (all.containsKey(sender.getName())) {
 						player.sendMessage(ChatColor.AQUA + "Particles have been disabled!");
-						
+
 						player.playSound(player.getLocation(),Sound.ORB_PICKUP,1, 0);	
 						Bukkit.getScheduler().cancelTask(all.get(sender.getName()));
 						all.remove(sender.getName());
@@ -1073,15 +1091,8 @@ public class Hearts extends JavaPlugin implements Listener
 				}
 			}
 
-		}else
-		{
-			sender.sendMessage("You must be a player to run this command!");
-		}
 
 
-
-		if (sender instanceof Player)
-		{
 			if (cmd.getName().equalsIgnoreCase("particles") || cmd.getName().equalsIgnoreCase("particle"))
 			{
 				if (sender.hasPermission("remc.particle.list"))
@@ -1097,29 +1108,30 @@ public class Hearts extends JavaPlugin implements Listener
 						player.sendMessage(ChatColor.RED + "/ender " + ChatColor.YELLOW + " EnderEye effect!");
 						player.sendMessage(ChatColor.RED + "/bubble " + ChatColor.YELLOW + " Bubble Effect!");
 						player.sendMessage(ChatColor.DARK_GREEN + "Type /particle 2 for next page!");
-					  }
-					if (args[0].equalsIgnoreCase("2"))
+					}
+					if (!(args.length == 0))
 					{
-					player.sendMessage(ChatColor.DARK_GREEN + "-----" + ChatColor.GREEN + " REMC Particles (2/2) " + ChatColor.DARK_GREEN + "-----");
-					player.sendMessage(ChatColor.RED + "/explosion " + ChatColor.YELLOW + " Explosion effect!");
-					player.sendMessage(ChatColor.RED + "/snow " + ChatColor.YELLOW + " Snow effect!");
-					player.sendMessage(ChatColor.RED + "/lava " + ChatColor.YELLOW + " Lava effect!");
-					player.sendMessage(ChatColor.RED + "/villager " + ChatColor.YELLOW + " Villager effect!");
-					player.sendMessage(ChatColor.RED + "/splash " + ChatColor.YELLOW + " Splash effect!");
-					player.sendMessage(ChatColor.RED + "/dust " + ChatColor.YELLOW + " Dust effect!");
+						if (args[0].equalsIgnoreCase("2"))
+						{
+							player.sendMessage(ChatColor.DARK_GREEN + "-----" + ChatColor.GREEN + " REMC Particles (2/2) " + ChatColor.DARK_GREEN + "-----");
+							player.sendMessage(ChatColor.RED + "/explosion " + ChatColor.YELLOW + " Explosion effect!");
+							player.sendMessage(ChatColor.RED + "/snow " + ChatColor.YELLOW + " Snow effect!");
+							player.sendMessage(ChatColor.RED + "/lava " + ChatColor.YELLOW + " Lava effect!");
+							player.sendMessage(ChatColor.RED + "/villager " + ChatColor.YELLOW + " Villager effect!");
+							player.sendMessage(ChatColor.RED + "/splash " + ChatColor.YELLOW + " Splash effect!");
+							player.sendMessage(ChatColor.RED + "/dust " + ChatColor.YELLOW + " Dust effect!");
+						}
 					}
 				}else
 				{
 					player.sendMessage("You do not have permission to view the particle list!");
 				}
 			}
-		}else
-		{
-			sender.sendMessage("You must be a player to use this command!");
-		}
-
-		return false;
+			return false;
 	}
+
+
+
 }
 
 
