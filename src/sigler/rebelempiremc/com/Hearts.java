@@ -45,14 +45,15 @@ import com.gmail.woodyc40.utilitylib.reflection.ReflectionUtil;
 @SuppressWarnings("unused")
 public class Hearts extends JavaPlugin implements Listener
 {
+	static List<String> toggle;
 	@SuppressWarnings("unchecked")
-	public List<String> toggle = (List<String>)getConfig().getList("List");
 	public void onEnable()
 	{
 		getServer().getLogger().info("-----------------------------");
 		getServer().getLogger().info("REMC Particles has been enabled!");
 		getServer().getLogger().info("-----------------------------");
-		//Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
+		Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
+		toggle = (List<String>) getConfig().getList("List");
 		saveDefaultConfig();
 		//getCommand("notes").setExecutor(new Noteeffect());
 }
@@ -151,11 +152,13 @@ public class Hearts extends JavaPlugin implements Listener
 				{
 					player.sendMessage("You will no longer have particles upon login.");
 				toggle.add(player.getName());
+				this.getConfig().set("player", toggle);
 				saveConfig();
 				}else
 				{
 					player.sendMessage("You will recieve particles upon login!");
 					toggle.remove(player.getName());
+					this.getConfig().set("player", toggle);
 					saveConfig();
 				}
 			}else
